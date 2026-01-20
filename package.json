@@ -1,0 +1,16 @@
+{
+  "name": "db-burst-writer",
+  "version": "1.0.0",
+  "description": "Minimal JavaScript skeleton for a DB burst writer",
+  "main": "src/writer.js",
+  "scripts": {
+    "start": "node src/writer.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "pg": "^8.11.3"
+  }
+}

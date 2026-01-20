@@ -1,34 +1,56 @@
-# Kafka + Flink Dashboard
+# DB Burst Writer - Skeleton
 
-Simple dashboard to display real-time updates from Kafka topics processed by Flink.
+Minimal JavaScript skeleton for a database burst writer.
 
 ## Structure
 
 ```
 livedb/
-├── dashboard/
-│   ├── index.html          # Main dashboard page
-│   ├── css/
-│   │   └── styles.css      # Styling for the dashboard
-│   └── js/
-│       └── app.js          # JavaScript for displaying messages (no logic/aggregation)
+├── src/
+│   └── writer.js          # Main burst writer script
+├── .env.example           # Environment variables template
+├── package.json           # Node.js dependencies
 └── README.md
 ```
 
 ## Setup
 
-1. Open `dashboard/index.html` in a web browser
-2. Configure the connection endpoint in `dashboard/js/app.js` (WebSocket or SSE)
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## Features
+2. Copy `.env.example` to `.env` and configure your database credentials:
+   ```bash
+   cp .env.example .env
+   ```
 
-- Simple, clean UI
-- Real-time message display
-- Separate sections for each topic (Account Usage, Billing Records, Cost Data)
-- All messages view
-- No logic or aggregation - just displays messages as they arrive
+3. Edit `.env` with your PostgreSQL connection details:
+   ```
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=your_database_name
+   DB_USER=your_username
+   DB_PASSWORD=your_password
+   ```
+
+4. Ensure your database table is already created (no DDL included in this skeleton).
+
+5. Run the burst writer:
+   ```bash
+   npm start
+   ```
+
+## How It Works
+
+The writer runs in an infinite loop that:
+- Logs "starting burst"
+- Contains TODO sections where insertion logic for 2 rows will be added
+- Logs "burst complete"
+- Sleeps for 60 seconds before the next burst
 
 ## Next Steps
 
-- Connect backend service to Kafka and forward messages via WebSocket/SSE
-- Configure Kafka topics and Flink processing
+- Implement the actual row insertion logic in the TODO sections
+- Add error handling for database operations
+- Configure the number of rows per burst if needed
