@@ -2,7 +2,7 @@
   "name": "db-burst-writer",
   "version": "1.0.0",
   "type": "module",
-  "description": "Minimal JavaScript skeleton for a DBburst writer",
+  "description": "Database burst writer that continuously inserts data into PostgreSQL in timed intervals",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js"
