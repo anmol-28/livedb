@@ -2,7 +2,7 @@
   "name": "db-burst-writer",
   "version": "1.0.0",
   "type": "module",
-  "description": "Minimal JavaScript skeleton for a DB burst writer",
+  "description": "Minimal JavaScript skeleton for a DBburst writer",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js"
