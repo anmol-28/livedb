@@ -1,5 +1,5 @@
 # Seed Data Folder
-
+Update the seed file when you want to increase rows/data
 Place your data file here. Supported formats:
 
 ## CSV Format
