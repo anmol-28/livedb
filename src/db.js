@@ -1,6 +1,7 @@
 // Database Configuration and Connection
 // Handles database config and connection setup
-
+//Neon Postgres Connection 
+//Will add sequelize later
 import dotenv from 'dotenv';
 import { Client } from 'pg';
 
