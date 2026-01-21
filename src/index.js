@@ -1,6 +1,7 @@
 // DB Burst Writer - Main Entry Point
 // Orchestrates the burst writing process
-
+//Dynamic or Read ahead mechanism will be added later
+// A Checkpoint where it checks the last inserted row and starts from there
 import { connect, getClient } from './db.js';
 import { performBurstInsert } from './insert.js';
 
