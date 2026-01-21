@@ -1,6 +1,6 @@
 // Database Insert Operations
 // Handles all database insert operations
-
+// inserts 2 rows per burst from seed data file
 import fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
