@@ -184,6 +184,3 @@ const rowsPerBurst = 2; // Change 2 to your desired number
 - Support for multiple database tables
 - Configurable burst patterns and timing
 
-## License
-
-ISC
