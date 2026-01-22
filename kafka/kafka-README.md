@@ -1,4 +1,4 @@
-# Kafka Integration Module
+# Kafka Integration Module 
 
 A Kafka producer module that reads data from PostgreSQL and publishes events to Kafka topics. This module streams database changes as events but does NOT write to the database.
 
@@ -204,3 +204,4 @@ Events published to Kafka follow this structure:
 - ⏳ Row-to-event mapping logic (to be implemented)
 - ⏳ Continuous streaming (to be implemented)
 
+#Flink + kafka consumer yet to implement
