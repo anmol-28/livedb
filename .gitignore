@@ -48,3 +48,7 @@ build/
 *.db
 *.sqlite
 *.sqlite3
+
+# Documentation logs (not for git)
+CHANGELOG.md
+logic_code_log.md
