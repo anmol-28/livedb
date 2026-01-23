@@ -8,9 +8,10 @@
  * @param {number} row.amount - Amount
  * @param {string} row.region - Region
  * @param {Date} row.created_at - Creation timestamp
+ * @param {string} [mode='normal'] - Mode: 'replay' or 'normal'
  * @returns {Object} Kafka event with key and value
  */
-export function mapRowToEvent(row) {
+export function mapRowToEvent(row, mode = 'normal') {
   return {
     key: String(row.id),
     value: {
@@ -23,6 +24,7 @@ export function mapRowToEvent(row) {
       meta: {
         source: 'livedb',
         created_at: row.created_at.toISOString(),
+        mode: mode,
       },
     },
   };
