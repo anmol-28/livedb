@@ -93,8 +93,8 @@ async function performBurstInsert(client) {
         }
         
         const insertQuery = `
-            INSERT INTO "livedb" ("id", "org", "amount", "region")
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO "livedb" ("org", "amount", "region")
+            VALUES ($1, $2, $3)
         `;
         
         const rowsPerBurst = 2;
@@ -104,7 +104,6 @@ async function performBurstInsert(client) {
             const rowIndex = currentIndex % data.length; // Loop back to start if we reach the end
             const row = data[rowIndex];
             const rowValues = [
-                row.id || null,
                 row.org,
                 row.amount,
                 row.region
