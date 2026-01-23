@@ -5,10 +5,12 @@ A Node.js application that continuously writes data to a PostgreSQL database in 
 ## What This Module Does
 
 This module **writes data** to a PostgreSQL database (`livedb` table) in controlled bursts:
-- Inserts 2 rows every 60 seconds in a continuous loop
-- Reads seed data from CSV or JSON files
-- Cycles through seed data automatically
-- Simulates live data streams for testing and development
+- ✅ Inserts 2 rows every 60 seconds in a continuous loop
+- ✅ Reads seed data from CSV or JSON files
+- ✅ Cycles through seed data automatically
+- ✅ Simulates live data streams for testing and development
+- ✅ Tracks insertion progress and displays countdown timers
+- ✅ Graceful shutdown handling
 
 ## Integration with Kafka Module
 
@@ -25,11 +27,13 @@ The Database Burst Writer module **does NOT directly interact with Kafka**. Inst
    - This module **writes** data to the `livedb` table in PostgreSQL
    - The Kafka producer module **reads** from the same `livedb` table
    - Kafka producer polls the database and publishes new rows as events to Kafka topics
+   - Both modules use the same database connection credentials
 
 3. **Shared Database**:
    - Both modules connect to the same PostgreSQL database
    - The `livedb` table is the integration point between modules
    - Database acts as the intermediary storage layer
+   - Kafka producer tracks progress using `producer_offsets` table
 
 ### Running Both Modules Together
 
@@ -41,6 +45,7 @@ To create a complete data pipeline:
    npm start
    ```
    - This will continuously insert data into the `livedb` table
+   - Inserts 2 rows every 60 seconds
 
 2. **Start Kafka Producer** (separate terminal):
    ```bash
@@ -48,6 +53,14 @@ To create a complete data pipeline:
    npm start
    ```
    - This will read from the `livedb` table and publish events to Kafka
+   - Polls database every 5 seconds (configurable) for new rows
+
+3. **Start Kafka Server** (if running locally):
+   ```bash
+   cd ../kafka/server
+   .\kafka-entry-point.bat
+   ```
+   - Starts ZooKeeper, Kafka broker, and creates topics automatically
 
 ## Features
 
@@ -57,6 +70,7 @@ To create a complete data pipeline:
 - **Automatic Cycling**: Loops through seed data continuously, restarting from the beginning when finished
 - **Graceful Shutdown**: Handles SIGINT (Ctrl+C) to close database connections cleanly
 - **Progress Tracking**: Shows insertion progress and countdown timers
+- **Error Resilience**: Continues operation even if individual insert operations fail
 
 ## Project Structure
 
@@ -70,7 +84,7 @@ db-burst-writer/
 │   ├── livedb_seed.csv   # Seed data file (CSV or JSON format)
 │   └── README.md         # Seed data format documentation
 ├── package.json          # Node.js dependencies and scripts
-└── README.md
+└── db_README.md          # This file
 ```
 
 ## Prerequisites
@@ -83,7 +97,8 @@ db-burst-writer/
     "id" SERIAL PRIMARY KEY,
     "org" VARCHAR(255) NOT NULL,
     "amount" DECIMAL(10, 2) NOT NULL,
-    "region" VARCHAR(255) NOT NULL
+    "region" VARCHAR(255) NOT NULL,
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
   ```
 
@@ -111,6 +126,7 @@ db-burst-writer/
    - Place your data file (CSV or JSON) in the `seed/` folder
    - See `seed/README.md` for supported formats
    - The application will automatically detect and load the first `.csv` or `.json` file found
+   - Default seed file: `seed/livedb_seed.csv`
 
 4. **Ensure database table exists:**
    Make sure your PostgreSQL database has the `livedb` table created with the schema shown above.
@@ -153,19 +169,23 @@ Press `Ctrl+C` to gracefully shutdown. The application will:
 
 1. **Initialization**: 
    - Loads environment variables from `.env`
-   - Establishes connection to PostgreSQL database
+   - Establishes connection to PostgreSQL database using `pg` Pool
    - Loads seed data from CSV/JSON file in `seed/` folder
+   - Parses CSV (supports with/without header, with/without ID column)
+   - Parses JSON (array of objects)
 
 2. **Burst Cycle** (repeats every 60 seconds):
    - Inserts 2 rows from the seed data
-   - Tracks current position in seed data array
-   - Cycles back to the beginning when all rows are processed
+   - Tracks current position in seed data array using `currentIndex`
+   - Cycles back to the beginning when all rows are processed (using modulo)
    - Displays progress and countdown timer
+   - Handles errors gracefully and continues to next cycle
 
 3. **Error Handling**:
    - Catches and logs errors during insert operations
    - Continues to next burst cycle even if errors occur
    - Maintains database connection throughout
+   - Graceful shutdown on SIGINT
 
 ## Seed Data Format
 
@@ -180,12 +200,20 @@ Acme Corp,1500.50,North
 TechStart Inc,2300.75,South
 ```
 
-**With ID:**
+**With ID (ID column is ignored, database auto-increments):**
 ```csv
 id,org,amount,region
 1,Acme Corp,1500.50,North
 2,TechStart Inc,2300.75,South
 ```
+
+**With Header:**
+- First line is treated as header and skipped
+- Supports both 3-column (org,amount,region) and 4-column (id,org,amount,region) formats
+
+**Without Header:**
+- All lines are treated as data
+- Must have exactly 3 or 4 columns
 
 ### JSON Format
 
@@ -199,7 +227,8 @@ id,org,amount,region
 **Notes:**
 - The script automatically finds the first `.csv` or `.json` file in the `seed/` folder
 - If `id` is `null` or not provided, the database will auto-increment
-- The script cycles through all rows continuously
+- The script cycles through all rows continuously using modulo arithmetic
+- Empty rows in CSV are filtered out
 
 ## Configuration
 
@@ -219,7 +248,34 @@ const rowsPerBurst = 2; // Change 2 to your desired number
 
 ## Dependencies
 
-- **pg**: PostgreSQL client for Node.js
-- **dotenv**: Loads environment variables from `.env` file
+- **pg** (^8.11.3): PostgreSQL client for Node.js
+- **dotenv** (^16.3.1): Loads environment variables from `.env` file
 
-# UI yet to Implement 
+## Troubleshooting
+
+### Database Connection Issues
+
+- Verify `.env` file exists and has correct credentials
+- Check database host, port, and SSL settings
+- Ensure database is accessible from your network
+- For Neon Postgres, verify connection string format
+
+### Seed Data Issues
+
+- Ensure seed file exists in `seed/` folder
+- Check CSV/JSON format matches expected structure
+- Verify file encoding is UTF-8
+- Check for empty rows or malformed data
+
+### Insert Errors
+
+- Verify `livedb` table exists with correct schema
+- Check table permissions for the database user
+- Ensure `id` column is SERIAL (auto-increment)
+- Verify data types match (org: VARCHAR, amount: DECIMAL, region: VARCHAR)
+
+## Related Documentation
+
+- **Main Project README**: [`../README.md`](../README.md)
+- **Kafka Integration**: [`../kafka/kafka-README.md`](../kafka/kafka-README.md)
+- **Kafka Operations Guide**: [`../SOP.md`](../SOP.md) 
