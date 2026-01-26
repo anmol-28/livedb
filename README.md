@@ -197,6 +197,24 @@ CREATE TABLE "producer_offsets" (
 
 This project is part of a larger task to create a working simulation of a live data system. It demonstrates the foundational components (data ingestion and event production) with future components (Flink processing and UI dashboard) to be added.
 
+## Project Scope
+
+This **"livedb"** demo project is focused on data insertion and Kafka topic creation (producer). This project does only **2 things**:
+
+1. **Inserts data in time bursts** - Continuously inserts data into PostgreSQL database (2 rows every 60 seconds)
+2. **Creates topics using producer** - Maps database rows to Kafka events which are visible on Windows PowerShell using the Kafka consumer (`consumer.bat` file from Kafka installation)
+
+**Important:** There is **no implementation** to see the rows in table format or any kind of UI in this project. Events can only be viewed through the Kafka console consumer in PowerShell.
+
+## Future Integration: liveui Module
+
+A new dedicated module (demo project) **is/will be implemented** which will be connected with this demo project (`livedb`) and then both will work concurrently to simulate live data systems:
+
+- **livedb** (this project): Inserts data and creates Kafka topics (Kafka producer)
+- **liveui** (future module): A simple React UI dashboard with Flink processing (code implementation and API) which displays the data it gets from the `livedb` demo project
+
+The `liveui` module will consume events from Kafka topics created by `livedb`, process them through Flink, and display the data in a React-based dashboard interface.
+
 ---
 
 **Task**: Create a working simulation which works in Live data from DB(neon)
