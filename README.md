@@ -155,6 +155,15 @@ livedb/
      npm start
      ```
 
+5. **View Events** (Optional - to see Kafka events):
+   - Open a new PowerShell terminal
+   - Navigate to your Kafka installation directory (e.g., `C:\Users\anmol\kafkatest`)
+   - Run Kafka console consumer:
+     ```powershell
+     bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic db_live_events --from-beginning
+     ```
+   - You will see JSON events printed to the console as they are produced
+
 ## Use Cases
 
 This simulation demonstrates:
@@ -215,6 +224,20 @@ A new dedicated module (demo project) **is/will be implemented** which will be c
 
 The `liveui` module will consume events from Kafka topics created by `livedb`, process them through Flink, and display the data in a React-based dashboard interface.
 
+## Project Status
+
+✅ **Module Complete** - This `livedb` demo project is fully implemented and functional:
+- Database burst writer module is complete and tested
+- Kafka producer module is complete and tested
+- Kafka server management scripts are complete
+- All documentation is finalized
+
+The project successfully demonstrates:
+- Continuous data insertion into PostgreSQL
+- Event streaming via Kafka producer
+- Offset tracking for reliable event processing
+- Integration between database writer and Kafka producer
+
 ---
 
-**Task**: Create a working simulation which works in Live data from DB(neon)
+**Task**: Create a working simulation which works in Live data from DB(neon) ✅ **COMPLETED**
